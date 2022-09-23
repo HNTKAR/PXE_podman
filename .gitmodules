@@ -1,0 +1,3 @@
+[submodule "PrivateSetting"]
+	path = PrivateSetting
+	url = git:HNTKAR/PrivateServerSetting.git
