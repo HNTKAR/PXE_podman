@@ -23,8 +23,8 @@ DHCP_IP=xxx.xxx.xxx.xxx
 NIC=eth*
 ConfigFile=PrivateSetting/HOME/config/dhcp-user.cfg
 sudo podman network create --driver macvlan --subnet $HostNetwork --opt parent=$NIC LocalMacVLAN
-sudo podman pod create --network LocalMacVLAN --ip=$IP --name DHCPpod
-sudo podman build --tag dhcp:1.0 --file Dockerfile --build-arg CONFIG_FILE=$ConfigFile
+sudo podman pod create --network LocalMacVLAN --ip=$DHCP_IP --name DHCPpod
+sudo podman build --tag dhcp:1.0 --file dhcpd/Dockerfile --build-arg CONFIG_FILE=$ConfigFile .
 sudo podman run --detach --replace --cap-drop ALL --cap-add CAP_DAC_OVERRIDE,CAP_NET_BIND_SERVICE,CAP_NET_RAW --pod DHCPpod --name dhcp_internal dhcp:1.0
 ```
 
