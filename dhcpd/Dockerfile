@@ -29,6 +29,6 @@ RUN echo -e \
 RUN touch /etc/dhcp/dhcpd-user.cfg
 
 COPY ["${CONFIG_FILE}","/etc/dhcp/dhcpd-user.cfg"]
-COPY ["run.sh", "/usr/local/bin/"]
+COPY ["dhcpd/run.sh", "/usr/local/bin/"]
 RUN chmod 777 -R /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/run.sh"]
