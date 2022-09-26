@@ -10,13 +10,14 @@
 |外部からアクセスするポート|80|
 |サーバーに配置するファイル|boot.ks|
 
+# 実行スクリプト
 ```bash
 # ファイアウォールの設定
 sudo firewall-cmd --add-forward-port=port=80:proto=tcp:toport=8080 
 sudo firewall-cmd --add-service=http
 sudo firewall-cmd --runtime-to-permanent
 
-cd PXE_podman
+cd pxe_podman
 #ポッドの作成(ほかのコンテナとも共有)
 podman pod create --replace --name pxe_pod -p 192.168.1.6:8080:80 -p 192.168.1.6:8069:69/udp -p 192.168.1.6:2049:2049/udp --net slirp4netns:enable_ipv6=false,port_handler=slirp4netns
 # イメージのビルド

@@ -21,7 +21,7 @@ dhcp-serverの実行に必要な権限は下記の通りである。
 
 # 実行スクリプト
 ```bash
-cd PXE_podman
+cd pxe_podman
 # 参加するネットワークを作成(macvlanを利用する場合)
 sudo podman network create --driver macvlan --subnet 192.168.1.0/24 --opt parent=eth0 LocalLAN
 # ポッドの作成
@@ -29,7 +29,7 @@ sudo podman pod create --network LocalLAN --ip=192.168.1.10 --name dhcp_pod
 # イメージのビルド
 sudo podman build --tag dhcp:1.0 --file dhcpd/Dockerfile --build-arg CONFIG_FILE=config.cfg .
 # コンテナの実行
-sudo podman run --detach --replace --cap-drop ALL --cap-add CAP_DAC_OVERRIDE,CAP_NET_BIND_SERVICE,CAP_NET_RAW --pod DHCPpod --name dhcp_container dhcp:1.0
+sudo podman run --detach --replace --cap-drop ALL --cap-add CAP_DAC_OVERRIDE,CAP_NET_BIND_SERVICE,CAP_NET_RAW --pod dhcp_pod --name dhcp_container dhcp:1.0
 ```
 # dhcpにおける設定ファイルの例
 ```
