@@ -2,37 +2,31 @@ config
 ```bash
 #tftp
 sudo firewall-cmd --zone=internal --add-forward-port=port=69:proto=udp:toport=8069
-#http
-sudo firewall-cmd --zone=internal --add-forward-port=port=80:proto=tcp:toport=8080 
 
 sudo firewall-cmd --add-service={http,tftp,nfs} --zone=internal
 sudo firewall-cmd --runtime-to-permanent
 ```
 
-ALL
-```bash
-hostIP=192.168.*.*
-podman pod create --replace -n PXEpod -p $hostIP:8080:80 -p $hostIP:8069:69/udp -p $hostIP:2049:2049/udp --net slirp4netns:enable_ipv6=false,port_handler=slirp4netns
-cd PXE_podman
-```
 
-DHCPD
-```bash
-HostNetwork=xxx.xxx.xxx.xxx/x
-DHCP_IP=xxx.xxx.xxx.xxx
-NIC=eth*
-ConfigFile=PrivateSetting/HOME/config/dhcp-user.cfg
-sudo podman network create --driver macvlan --subnet $HostNetwork --opt parent=$NIC LocalMacVLAN
-sudo podman pod create --network LocalMacVLAN --ip=$DHCP_IP --name DHCPpod
-sudo podman build --tag dhcp:1.0 --file dhcpd/Dockerfile --build-arg CONFIG_FILE=$ConfigFile .
-sudo podman run --detach --replace --cap-drop ALL --cap-add CAP_DAC_OVERRIDE,CAP_NET_BIND_SERVICE,CAP_NET_RAW --pod DHCPpod --name dhcp_internal dhcp:1.0
-```
+# [DHCPサーバー](dhcpd/Readme.md)
+- DHCPサーバーの構築を行う。  
+- 同一LAN内にDHCPサーバーが存在しないことを確認して実行する必要がある。  
+- ホストと同様のネットワークが必須であるため、コンテナを`--driver macvlan`オプションを用いて実行するか、接続するネットワークを作成する際に`--net host` オプションを用いる。
 
-NGINX
-```
-podman build -t nginx_internal:1.0 -f Dockerfile
-podman run --pod DHCPpod -d --name nginx_internal nginx_internal:1.0
-```
+## --build-args
+|引数名|値|
+|:-:|:-:|
+|CONFIG_FILE|dhcpサーバー用の設定ファイル名|
+
+
+# [WEBサーバー](nginx/Readme.md)
+- WEBサーバーの構築を行う
+- PXE用であればHTTP通信のみで足りるため、443ポートは開放しない
+
+## --build-args
+|引数名|値|
+|:-:|:-:|
+|PAGE_FILE|公開するWEBページ|
 
 TFTP
 ```
