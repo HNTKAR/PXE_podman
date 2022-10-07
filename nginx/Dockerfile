@@ -10,7 +10,7 @@ RUN rm -f /var/log/nginx/*
 RUN ln -s /dev/stderr /var/log/nginx/error.log
 RUN ln -s /dev/stdout /var/log/nginx/access.log
 
-COPY ["${PAGE_FILE}","/etc/dhcp/dhcpd-user.cfg"]
-COPY ["dhcpd/run.sh", "/usr/local/bin/"]
+COPY ["${PAGE_FILE}","/usr/share/nginx/html/"]
+COPY ["nginx/run.sh", "/usr/local/bin/"]
 RUN chmod 777 -R /usr/local/bin/
 ENTRYPOINT ["/usr/local/bin/run.sh"]
