@@ -9,7 +9,7 @@ RUN dnf -y update && dnf -y install dhcp-server cronie
 
 
 RUN touch /etc/dhcp/dhcpd-user.cfg
-COPY ["dhcpd-main.cfg","/etc/dhcp/"]
+COPY ["dhcpd/dhcpd-main.cfg","/etc/dhcp/"]
 COPY ["${CONFIG_FILE}","/etc/dhcp/dhcpd-user.cfg"]
 COPY ["dhcpd/run.sh", "/usr/local/bin/"]
 RUN chmod 777 -R /usr/local/bin/
