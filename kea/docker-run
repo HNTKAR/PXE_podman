@@ -1,0 +1,16 @@
+#!/bin/sh
+
+pass="password"
+user="root"
+
+while [ ! -e "/sock/mysql.sock" ]; do
+    sleep 1
+done
+
+while [ $(mysql -u${user} -p${pass} -S /sock/mysql.sock -e"show databases;" | grep mysql | wc -l) -eq 0 ]; do
+    sleep 1
+done
+
+kea-admin db-init mysql -u kea_user -p kea_password -n kea_db
+
+exec kea-dhcp4 -c /usr/local/src/kea.conf
