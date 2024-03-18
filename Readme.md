@@ -7,28 +7,25 @@
 |ポッド名|file|ポッド作成時に設定|
 
 ## mariadb container
-データベース
-
 |名称|値|備考|
 |:-:|:-:|:-:|
 |localtime|Asia/Tokyo|
 |socket|`/sock/mysql.sock`|
-|DB root password|password|`Dockerfile`にて設定|
 |kea DB name|kea_db|`kea.sql`にて設定|
 |kea DB user|kea_user|`kea.sql`にて設定|
 |kea DB password|kea_password|`kea.sql`にて設定|
 
 ## kea container
-dhcp
 |名称|値|備考|
 |:-:|:-:|:-:|
 |localtime|Asia/Tokyo|
 |`CONFIG_FILE`|-|`--build-arg`により設定|
 
 コンテナ起動時、以下のように変数を設定することでwebサーバの設定を変更可能  
-(デフォルトでは`192.168.1.0/24`用の設定が設定されているため、自身の環境用に併せて変更する)  
+この場合、`network_podman/kae_v4/kea.conf`の設定ファイルを適用  
+(デフォルトでは`192.168.0.0/24`用の設定が設定されているため、自身の環境用に併せて変更する)  
 ```bash
-sudo podman build --build-arg CONFIG_FILE=$HOME/kea.conf --tag network-kea:$TagName --file kea/Dockerfile .
+sudo podman build --build-arg CONFIG_FILE=kea.conf --tag network-kea:$TagName --file kea_v4/Dockerfile .
 ```
 
 # 実行スクリプト
@@ -45,13 +42,13 @@ TagName="main"
 NIC="eth0"
 
 # 利用するIPアドレスを指定
-NewIP="192.168.1.10"
+NewIP="192.168.0.10"
 
 # 所属ネットワークのサブネットアドレスを指定
-SubnetAddr="192.178.1.1/24"
+SubnetAddr="192.168.0.1/24"
 
 # ネットワークの作成
-sudo podman network create --driver macvlan --subnet $SubnetAddr --opt parent=$NIC LocalLAN
+sudo podman network create --driver ipvlan --opt parent=$NIC --subnet $SubnetAddr LocalLAN
 
 # ボリュームの作成
 sudo podman volume create network_mariadb_dir
@@ -60,11 +57,11 @@ sudo podman volume create network_mariadb_dir
 sudo podman pod create --replace --network LocalLAN --ip=$NewIP --name network
 
 # mariadb
-sudo podman build --tag network-mariadb:$TagName --file mariadb/Dockerfile .
+sudo podman build --tag network-mariadb:$TagName --file mariadb/Dockerfile
 sudo podman run --detach --replace --mount type=volume,source=network_mariadb_dir,destination=/var/lib/mysql --pod network --name network-mariadb network-mariadb:$TagName
 
 # kea
-sudo podman build --tag network-kea:$TagName --file kea/Dockerfile .
+sudo podman build --tag network-kea:$TagName --file kea_v4/Dockerfile
 sudo podman run --detach --replace --privileged --volumes-from network-mariadb --pod network --name network-kea network-kea:$TagName
 ```
 
