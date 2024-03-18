@@ -1,12 +1,9 @@
 FROM mariadb
 
+ENV MARIADB_RANDOM_ROOT_PASSWORD="true"
+ENV TZ='Asia/Tokyo'
+
 VOLUME [ "/sock" ]
 
-ENV MARIADB_ROOT_PASSWORD="password"
-COPY ["mariadb/my.cnf","/etc/mysql/"]
-COPY ["mariadb/kea.sql","/docker-entrypoint-initdb.d/"]
-
-RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
-RUN chown -R root:root /docker-entrypoint-initdb.d
-
-CMD ["--socket","/sock/mysql.sock"]
+COPY ["user.cnf" , "/etc/mysql/conf.d/99-user.cnf"]
+COPY ["kea.sql" , "/docker-entrypoint-initdb.d/00-kea.sql"]

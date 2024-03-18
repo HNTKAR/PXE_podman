@@ -1,0 +1,6 @@
+[client-server]
+socket = /sock/mysqld.sock
+
+[server]
+default_time_zone = 'Asia/Tokyo'
+innodb_flush_log_at_trx_commit = 2
