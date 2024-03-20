@@ -4,7 +4,7 @@
 ## 全体設定
 |名称|値|備考|
 |:-:|:-:|:-:|
-|ポッド名|file|ポッド作成時に設定|
+|ポッド名|network|ポッド作成時に設定|
 
 ## mariadb container
 |名称|値|備考|
@@ -19,14 +19,21 @@
 |名称|値|備考|
 |:-:|:-:|:-:|
 |localtime|Asia/Tokyo|
-|`CONFIG_FILE`|-|`--build-arg`により設定|
+|`CONFIG_FILE`|`sample.conf`|`--build-arg`により設定|
 
 コンテナ起動時、以下のように変数を設定することでwebサーバの設定を変更可能  
-この場合、`network_podman/kae_v4/kea.conf`の設定ファイルを適用  
+この場合、`network_podman/kae_v4/_kea.conf`の設定ファイルを適用  
 (デフォルトでは`192.168.0.0/24`用の設定が設定されているため、自身の環境用に併せて変更する)  
 ```bash
-sudo podman build --build-arg CONFIG_FILE=kea.conf --tag network-kea:$TagName --file kea_v4/Dockerfile .
+sudo podman build --build-arg CONFIG_FILE=_kea.conf --tag network-kea:$TagName --file kea_v4/Dockerfile .
 ```
+
+## bind9 container
+|名称|値|備考|
+|:-:|:-:|:-:|
+|localtime|Asia/Tokyo|
+|`CONFIG_DIR`|`sample`|`--build-arg`により設定|
+|`CONFIG_FILE`|`named-user.conf`|`--build-arg`により設定|
 
 # 実行スクリプト
 
@@ -63,6 +70,10 @@ sudo podman run --detach --replace --mount type=volume,source=network_mariadb_di
 # kea
 sudo podman build --tag network-kea:$TagName --file kea_v4/Dockerfile
 sudo podman run --detach --replace --privileged --volumes-from network-mariadb --pod network --name network-kea network-kea:$TagName
+
+# bind9
+sudo podman build --tag network-bind9:$TagName --file bind9/Dockerfile
+sudo podman run --detach --replace --privileged --pod network --name network-bind9 network-bind9:$TagName
 ```
 
 ## 自動起動の設定

@@ -1,0 +1,26 @@
+; reference to https://bind9.readthedocs.io/en/latest/chapter3.html#example-com-base-zone-file
+; base zone file for example.internal
+$TTL 5m    ; default TTL for zone
+$ORIGIN example.internal. ; base domain-name
+; Start of Authority RR defining the key characteristics of the zone (domain)
+@         IN      SOA   ns1.example.internal. mail.example.internal. (
+                                2024032000 ; serial number
+                                1h        ; refresh
+                                10m        ; update retry
+                                12d         ; expiry
+                                1m         ; minimum
+                                )
+; name server RR for the domain
+           IN      NS      ns1.example.internal.
+; mail server RRs for the zone (domain)
+           IN      MX  10  mail.example.internal.
+; domain hosts includes NS and MX records defined above
+; plus any others required
+; for instance a user query for the A RR of test.example.internal will
+; return the IPv4 address 192.168.0.15 from this zone file
+ns1        IN      A       192.168.0.2
+mail       IN      A       192.168.0.3
+test       IN      A       192.168.0.15
+www        IN      A       192.168.0.20
+; aliases ftp (ftp server) to www.example.internal
+ftp        IN      CNAME   www
