@@ -52,7 +52,7 @@ NIC="eth0"
 NewIP="192.168.0.10"
 
 # 所属ネットワークのサブネットアドレスを指定
-SubnetAddr="192.168.0.1/24"
+SubnetAddr="192.168.0.0/24"
 
 # ネットワークの作成
 sudo podman network create --driver ipvlan --opt parent=$NIC --subnet $SubnetAddr LocalLAN
