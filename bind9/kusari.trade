@@ -1,0 +1,32 @@
+; reference to https://bind9.readthedocs.io/en/latest/chapter3.html#example-com-base-zone-file
+; base zone file for kusari.trade
+$TTL 5m    ; default TTL for zone
+$ORIGIN kusari.trade. ; base domain-name
+; Start of Authority RR defining the key characteristics of the zone (domain)
+@             IN      SOA   ns.kusari.trade. mail.kusari.trade. (
+                                2024032000 ; serial number
+                                1h         ; refresh
+                                10m        ; update retry
+                                12d        ; expiry
+                                1m         ; minimum
+                                )
+; name server RR for the domain
+              IN      NS      ns
+; mail server RRs for the zone (domain)
+              IN      MX  10  mail
+; domain hosts includes NS and MX records defined above
+; plus any others required
+; for instance a user query for the A RR of nextcloud.kusari.trade will
+; return the IPv4 address 192.168.16.3 from this zone file
+NetworkPod    IN      A       192.168.2.0
+DMZPod        IN      A       192.168.2.1
+ns            IN      A       192.168.2.0
+MainServer    IN      A       192.168.0.3
+mail          IN      A       192.168.0.3
+; aliases network (network pod) to ns.kusari.trade
+nextcloud     IN      CNAME   MainServer
+net           IN      CNAME   NetworkPod
+dmz           IN      CNAME   DMZPod
+vpn           IN      CNAME   DMZPod
+test          IN      CNAME   TestPod
+TestPod       IN      CNAME   MainServer
